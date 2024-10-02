@@ -21,7 +21,7 @@ return new class extends Migration
             $table->string('imagen2', 255)->nullable();
             $table->string('imagen3', 255)->nullable();
             $table->enum('estatus', ['Disponible', 'No Disponible']);
-            $table->foreignId('proovedorId')->constrained('proovedor')->onDelete('cascade');
+            // $table->foreignId('proovedorId')->constrained('proovedor')->onDelete('cascade');
             $table->timestamps();
         });
     }
