@@ -5,6 +5,7 @@ namespace App\Http\Controllers\API;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\Product;
+use App\Models\Provider;
 
 class ProductsController extends Controller
 {
@@ -13,10 +14,13 @@ class ProductsController extends Controller
      */
     public function index()
     {
-        //
-        $products = Product::where('estatus', '=','1')->get();
-        return response()->json(['data' => $products, 'message' => 'fakin goat 🐐'], 200);
-        //return response()->json($products);
+    
+        $products = Product::where('status', '=','1')->get();
+        if ($products->isEmpty()) {
+            return response()->json(['data' => $products, 'message' => 'No hay productos disponibles.'], 200);
+        }
+        return response()->json(['data' => $products, 'message' => 'Aqui estan los productos 🐐'], 200);
+     
     }
 
     /**
@@ -24,7 +28,7 @@ class ProductsController extends Controller
      */
     public function create()
     {
-        //
+        return response()->json(['providers' => Provider::all()], 200);
     }
 
     /**
@@ -54,13 +58,43 @@ class ProductsController extends Controller
         $product->price = $request->price;
         $product->discount = $request->discount;
         $product->description = $request->description;
-        $product->image = $request->image;
-        $product->image2 = $request->image2;
-        $product->image3 = $request->image3;
+        $product->stock = $request->stock;
         $product->status = 1;
-        //$product->prooviderId = $request->prooviderId;
+        $product->providerId = $request->providerId;
         $product->save();
-        return response()->json(['product'=> $product]);
+
+        if ($request->hasFile('image')) {
+            $img = $request->file('image');
+            $ext = $img->extension();
+            $imgName = 'product_'.$product->id.'_1.'.$ext;
+            $path= $img->storeAs('imgs/products', $imgName, 'public');
+            $product->image = asset('storage/'.$path);
+            $product->save();
+
+        }
+        if ($request->hasFile('image2')) {
+            $img = $request->file('image2');
+            $ext = $img->extension();
+            $imgName = 'product_'.$product->id.'_2.'.$ext;
+            $path= $img->storeAs('imgs/products', $imgName, 'public');
+            $product->image2 = asset('storage/'.$path);
+            $product->save();
+
+        }
+        if ($request->hasFile('image3')) {
+            $img = $request->file('image3');
+            $ext = $img->extension();
+            $imgName = 'product_'.$product->id.'_3.'.$ext;
+            $path= $img->storeAs('imgs/products', $imgName, 'public');
+            $product->image3 = asset('storage/'.$path);
+            $product->save();
+
+        }
+
+       
+        
+        
+        return response()->json(['product'=> $product, 'message' => 'Producto agregado correctamente.'], 200);
 
        
     }
