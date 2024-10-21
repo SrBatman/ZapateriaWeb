@@ -123,17 +123,45 @@ class ProductsController extends Controller
     public function update(Request $request, $id)
     {
         //
+        
         $product = Product::find($id);
         $product->name = $request->name;
         $product->price = $request->price;
         $product->discount = $request->discount;
         $product->description = $request->description;
-        $product->image = $request->image;
-        $product->image2 = $request->image2;
-        $product->image3 = $request->image3;
-        $product->status = 1;
-        //$product->prooviderId = $request->prooviderId;
+
+  
         $product->save();
+        //$product->prooviderId = $request->prooviderId;
+
+        if ($request->hasFile('image')) {
+            $img = $request->file('image');
+            $ext = $img->extension();
+            $imgName = 'product_'.$product->id.'_1.'.$ext;
+            $path= $img->storeAs('imgs/products', $imgName, 'public');
+            $product->image = asset('storage/'.$path);
+            $product->save();
+
+        }
+        if ($request->hasFile('image2')) {
+            $img = $request->file('image2');
+            $ext = $img->extension();
+            $imgName = 'product_'.$product->id.'_2.'.$ext;
+            $path= $img->storeAs('imgs/products', $imgName, 'public');
+            $product->image2 = asset('storage/'.$path);
+            $product->save();
+
+        }
+        if ($request->hasFile('image3')) {
+            $img = $request->file('image3');
+            $ext = $img->extension();
+            $imgName = 'product_'.$product->id.'_3.'.$ext;
+            $path= $img->storeAs('imgs/products', $imgName, 'public');
+            $product->image3 = asset('storage/'.$path);
+            $product->save();
+
+        }
+        
         return response()->json(['product'=> $product]);
     }
 
