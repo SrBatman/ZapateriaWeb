@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('email', 250);
             $table->string('password', 255);
             $table->string('picture', 255);
-            $table->integer('status');
+            $table->tinyInteger('status')->default(1);
             $table->boolean('verified')->default(0);
             $table->string('address', 255)->nullable();
             $table->timestamps();

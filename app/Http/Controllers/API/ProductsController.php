@@ -125,12 +125,27 @@ class ProductsController extends Controller
         //
         
         $product = Product::find($id);
-        $product->name = $request->name;
-        $product->price = $request->price;
-        $product->discount = $request->discount;
-        $product->description = $request->description;
+        if ($product == null) return response()->json(['message' => 'Producto no encontrado.'], 404);
+        if ($request->name){
+            $product->name = $request->name;
+        }
+        if ($request->price){
+            $product->price = $request->price;
+        }
+        if ($request->discount){
+            $product->discount = $request->discount;
+        }
+        if ($request->description){
+            $product->description = $request->description;
+        }
 
-  
+        if ($request->stock) {
+            $product->stock = $request->stock;
+        }
+
+        if ($request->providerId) {
+            $product->providerId = $request->providerId;
+        }
         $product->save();
         //$product->prooviderId = $request->prooviderId;
 
@@ -172,6 +187,7 @@ class ProductsController extends Controller
     {
         //
         $product = Product::find($id);
+        if ($product == null) return response()->json(['message' => 'Producto no encontrado.'], 404);
         $product->status = 0;
         $product->save();
         return response()->json(['product'=> $product]);

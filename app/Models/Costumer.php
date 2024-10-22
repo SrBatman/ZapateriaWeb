@@ -12,7 +12,7 @@ class Costumer extends Model
     protected $table = 'costumers';
 
     protected $fillable = [
-        'nombres', 'apellidos', 'correo', 'password', 'imagen', 'estatus', 'verificado', 'direccion'
+        'name', 'lastname', 'email', 'password', 'picture', 'status', 'verified', 'address'
     ];
 
   

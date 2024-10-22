@@ -4,6 +4,7 @@ namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
+use App\Models\Costumer;
 
 class CostumersController extends Controller
 {
@@ -12,7 +13,13 @@ class CostumersController extends Controller
      */
     public function index()
     {
-        //
+        $customers = Costumer::where('status', 1)->get();
+        
+        if ($customers->isEmpty()) {
+            return response()->json(['data' => $customers, 'message' => 'No hay clientes disponibles.'], 200);
+        }
+
+        return response()->json(['data' => $customers, 'message' => 'Lista de clientes disponible 🐐'], 200);
     }
 
     /**
@@ -20,7 +27,7 @@ class CostumersController extends Controller
      */
     public function create()
     {
-        //
+        // No es necesario para API
     }
 
     /**
@@ -28,38 +35,115 @@ class CostumersController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $customer = new Costumer();
+        $customer->name = $request->name;
+        $customer->lastname = $request->lastname;
+        $customer->email = $request->email;
+        $customer->password = $request->password;
+        $customer->address = $request->address;
+        $customer->status = 1;
+        $customer->verified = $request->has('verified') ? $request->verified : 0; // Optional verified field
+        $customer->save();
+
+        // Guardar imagen si se proporciona
+        if ($request->hasFile('image')) {
+            $img = $request->file('image');
+            $ext = $img->extension();
+            $imgName = 'customer_' . $customer->id . '.' . $ext;
+            $path = $img->storeAs('imgs/customers', $imgName, 'public');
+            $customer->picture = asset('storage/' . $path);
+            $customer->save();
+        }
+
+        return response()->json(['customer' => $customer, 'message' => 'Cliente agregado correctamente.'], 200);
     }
 
     /**
      * Display the specified resource.
      */
-    public function show(string $id)
+    public function show($id)
     {
-        //
+        $customer = Costumer::find($id);
+
+        if (!$customer) {
+            return response()->json(['message' => 'Cliente no encontrado.'], 404);
+        }
+
+        return response()->json(['customer' => $customer]);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(string $id)
+    public function edit($id)
     {
-        //
+        // No es necesario para API
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, string $id)
+    public function update(Request $request, $id)
     {
-        //
+        $customer = Costumer::find($id);
+
+        if (!$customer) {
+            return response()->json(['message' => 'Cliente no encontrado.'], 404);
+        }
+
+        // Actualizar solo los campos presentes en la solicitud
+        if ($request->has('name')) {
+            $customer->name = $request->name;
+        }
+        if ($request->has('lastname')) {
+            $customer->lastname = $request->lastname;
+        }
+        if ($request->has('email')) {
+            $customer->email = $request->email;
+        }
+        if ($request->has('password')) {
+            $customer->password = $request->password;
+        }
+        if ($request->has('address')) {
+            $customer->address = $request->address;
+        }
+        if ($request->has('status')) {
+            $customer->status = $request->status;
+        }
+        if ($request->has('verified')) {
+            $customer->verified = $request->verified;
+        }
+
+        // Guardar cambios en la base de datos
+        $customer->save();
+
+        // Manejar la actualización de la imagen si se proporciona
+        if ($request->hasFile('image')) {
+            $img = $request->file('image');
+            $ext = $img->extension();
+            $imgName = 'customer_' . $customer->id . '.' . $ext;
+            $path = $img->storeAs('imgs/customers', $imgName, 'public');
+            $customer->picture = asset('storage/' . $path);
+            $customer->save();
+        }
+
+        return response()->json(['customer' => $customer, 'message' => 'Cliente actualizado correctamente.'], 200);
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(string $id)
+    public function destroy($id)
     {
-        //
+        $customer = Costumer::find($id);
+
+        if (!$customer) {
+            return response()->json(['message' => 'Cliente no encontrado.'], 404);
+        }
+
+        $customer->status = 0; // Desactivar el cliente
+        $customer->save();
+
+        return response()->json(['customer' => $customer, 'message' => 'Cliente desactivado correctamente.'], 200);
     }
 }

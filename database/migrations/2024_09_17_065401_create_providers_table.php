@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('name', 200);
             $table->string('contact', 200);
+            $table->tinyInteger('status')->default(1);
             $table->timestamps();
         });
     }

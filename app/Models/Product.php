@@ -12,13 +12,13 @@ class Product extends Model
     protected $table = 'products';
 
     protected $fillable = [
-        'name', 'description', 'stock', 'price', 'descuento', 'imagen', 'imagen2', 'imagen3', 'estatus', 'provider_id'
+        'name', 'description', 'stock', 'price', 'discount', 'image', 'image2', 'image3', 'status', 'providerId'
     ];
 
 
     public function provider()
     {
-        return $this->belongsTo(Provider::class, 'provider_id');
+        return $this->belongsTo(Provider::class, 'providerId');
     }
 
     public function bills()
